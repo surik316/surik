@@ -1,0 +1,81 @@
+#include <iostream>
+#include <string>
+using namespace std;
+class Medicament{
+private:
+  double dose;
+  int mass;
+public:
+  string name, active_substance;
+  int form_medicine,cost;
+  Medicament(){
+    form_medicine=0;
+    cost=0;
+    //cout<<"Вызвался конструктор"<<endl;
+  }
+  Medicament(const Medicament &obj)
+     {
+       name=obj.name;
+       active_substance=obj.active_substance ;
+       form_medicine=obj.form_medicine;
+       cost=obj.cost;
+       dose=obj.dose;
+       mass=obj.mass;
+     }
+  ~Medicament(){
+    //cout<<"Вызвался деструктор"<<endl;
+  }
+  void Vvodprivate(){
+    cout<<"Print dose of medicament"<<endl;
+    cin>>dose;
+    cout<<"Print mass of medicament"<<endl;
+    cin>>mass;
+    return;
+  }
+  double Costsubstance(){
+    return double(cost)/(double(mass)*double(dose));
+
+  }
+  void PrintMedicament(){
+    cout<<"name = "<<name<<endl;
+    cout<<"active_substance = "<<active_substance<<endl;
+    cout<<"form_medicine = "<<form_medicine<<endl;
+    cout<<"cost = "<<cost<<endl;
+    cout<<"dose = "<<dose<<endl;
+    cout<<"mass = "<<mass<<endl;
+    return ;
+  }
+
+};
+void Vvod(Medicament &print){
+  cout<<"Print name of medicament"<<endl;
+  cin>>print.name;
+  cout<<"Print active_substance of medicament"<<endl;
+  cin>>print.active_substance;
+  cout<<"Print form_medicine of medicament(number 1-4)"<<endl;
+  cin>>print.form_medicine;
+  cout<<"Print cost of medicament"<<endl;
+  cin>>print.cost;
+  print.Vvodprivate();
+  return;
+}
+bool Sravnenie(Medicament a,string b){
+  if ( a.active_substance==b ){
+    return true;
+  }
+  else{
+    return false;
+
+  }
+}
+int main(){
+  string stroka;
+  stroka="abc";
+  Medicament medic;
+
+  Vvod(medic);
+  cout<<"Vivod stoimosti edinici tovara = "<<medic.Costsubstance()<<endl;
+  medic.PrintMedicament();
+  cout<<Sravnenie(medic,stroka)<< endl;
+  return 0;
+}

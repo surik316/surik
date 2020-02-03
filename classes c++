@@ -1,0 +1,230 @@
+#include <iostream>
+#include <string>
+using namespace std;
+class Medicament{
+  private:
+    double dose;
+    int mass;
+  public:
+    string name, active_substance;
+    int form_medicine,cost;
+    Medicament();
+    Medicament(const Medicament &);
+    ~Medicament();
+   friend Medicament operator+ (const Medicament& m1,const Medicament& m2);
+   friend std::istream& operator>>(std::istream&in, Medicament&medic);
+   friend std::ostream& operator<<(std::ostream&out,const Medicament&medic);
+   double getDose();
+   int getMass();
+};
+double Medicament::getDose(){
+  return dose;
+}
+int Medicament::getMass(){
+  return mass;
+}
+std::istream& operator >> (std::istream &in,   Medicament &medic){
+  cout<<"Enter name of medicamet ";
+  in >> medic.name ;
+  cout<<"Enter active_substance of medicamet ";
+  in >> medic.active_substance ;
+  cout<<"Enter form_medicine of medicamet ";
+  in >> medic.form_medicine ;
+  cout<<"Enter cost of medicamet ";
+  in >>medic.cost ;
+  cout<<"Enter dose of medicamet ";
+  in >>medic.dose ;
+  cout<<"Enter mass of medicamet ";
+  in >>medic.mass ;
+  return in;
+}
+std::ostream& operator << (std::ostream &out, const  Medicament &medic){
+  out << "name = " << medic.name << endl;
+  out <<"active_substance = "<< medic.active_substance << endl;
+  out <<"form_medicine = " <<medic.form_medicine <<endl ;
+  out <<"cost = " <<medic.cost <<endl ;
+  out <<"dose = " <<medic.dose <<endl ;
+  out <<"mass = " <<medic.mass <<endl ;
+  return out;
+
+}
+Medicament::Medicament(){
+  name="NON";
+  active_substance="NON";
+  form_medicine=0;
+  cost=0;
+  dose=0;
+  mass=0;
+};
+Medicament::~Medicament(){
+};
+Medicament operator+ (const Medicament& m1,const Medicament& m2){
+  Medicament m3;
+  m3.dose=-1;
+  if((m1.form_medicine == m2.form_medicine) && (m1.active_substance == m2.active_substance)) {
+      m3.name = m1.name + "+" + m2.name;
+      m3.form_medicine = m1.form_medicine;
+      m3.cost = m1.cost + m2.cost;
+      m3.active_substance = m1.active_substance;
+      m3.mass = m1.mass + m2.mass;
+      m3.dose = (m1.dose*m1.mass + m2.dose*m2.mass)/m3.mass;
+    }
+    return m3;
+}
+Medicament::Medicament(const Medicament &medic){
+  name=medic.name;
+  active_substance=medic.active_substance;
+  form_medicine=medic.form_medicine;
+  cost=medic.cost;
+  dose=medic.dose;
+  mass=medic.mass;
+};
+class Pharmacy{
+  private:
+  int price;
+  int summa;
+  int count;
+  public:
+    Medicament** medicaments;
+    void poiskactive_substance(string);
+    void poiskdosa(double);
+    void add_medicament(Medicament*);
+    void del_medic_by_no(int);
+    void Information();
+    void tablica();
+    Pharmacy();
+    Pharmacy(Medicament*,Medicament*);
+    Pharmacy(const Pharmacy&);
+    ~Pharmacy();
+};
+Pharmacy::Pharmacy(){
+  price=0;
+  summa=0;
+  count=0;
+  medicaments=NULL;
+}
+Pharmacy::Pharmacy(Medicament* med1,Medicament* med2){
+    count=2;
+    price=med1->cost+med2->cost;
+    summa=price;
+    medicaments=new Medicament*[count];
+    medicaments[0]=med1;
+    medicaments[1]=med2;
+}
+Pharmacy::~Pharmacy(){
+  if (medicaments!=NULL){
+    delete [] medicaments;
+  }
+}
+Pharmacy::Pharmacy(const Pharmacy& med3){
+  price=med3.price;
+  summa=med3.summa;
+  count=med3.count;
+  if (med3.medicaments==NULL){
+    medicaments=NULL;
+  }
+  else{
+    medicaments=new Medicament* [count];
+    for (int i=0;i<count;i++){
+      medicaments[i]=med3.medicaments[i];
+    }
+  }
+}
+void Pharmacy::add_medicament(Medicament* med1){
+  if (med1->getDose()==-1){
+    return;
+  }
+  count+=1;
+  price+=med1->cost;
+  Medicament** temp= new Medicament*[count];
+  for (int i = 0; i < count - 1; i++) {
+    temp[i] = medicaments[i];
+  }
+  temp[count-1] = med1;
+  delete [] medicaments;
+  medicaments = temp;
+  return ;
+}
+void Pharmacy::del_medic_by_no(int n){
+  int a=0;
+  count-=1;
+  price-=medicaments[n-1]->cost;
+  summa+=medicaments[n-1]->cost;
+  Medicament** temp=new Medicament*[count];
+  for (int i=0; i<count;i++){
+    if((n-1)==i){
+      a=1;
+      continue;
+    }
+    temp[i-a]=medicaments[i];
+  }
+  delete [] medicaments;
+  medicaments=temp;
+  return ;
+}
+void Pharmacy::Information(){
+  std::cout<<"Total medication = "<<count<<endl;
+  std::cout<<"Total amount = "<<price<<endl;
+  return ;
+}
+void Pharmacy::poiskactive_substance(string substance){
+  int k=0;
+  cout<<"There are some medicaments with "<<substance<<" substance: "<<" ";
+  for (int i=0;i<count;i++){
+    if (substance==medicaments[i]->active_substance){
+      k++;
+      cout<<medicaments[i]->name<<" ";
+    }
+  }
+  if (k==0){
+    std::cout<<"There is no such medicaments with substance: "+substance<<endl;
+  }
+  cout<<endl;
+  return;
+}
+void Pharmacy::poiskdosa(double d){
+  int k=0;
+  cout<<"There are some medicaments with "<<d<<" dose: "<<endl;
+  for(int i=0;i<count;i++){
+    if (d==medicaments[i]->getDose()){
+      k++;
+      cout<<medicaments[i]->name<<" "<<endl;
+    }
+  }
+  if (k==0){
+    std::cout<<"There is no such medicaments with dosa: "<<d<<endl;
+  }
+  return ;
+}
+void Pharmacy::tablica(){
+  int i;
+  cout<<("\n+----------+-----------+\n");
+  cout<<("|   Name   |  Quantity | \n");
+  cout<<("+----------+-----------+\n");
+  for (i=0 ;i<count;i++){
+    cout<<"|   "<<medicaments[i]->name<<"   |"<<"      "<<medicaments[i]->getMass()<<"    |"<<endl;
+    cout<<("+----------+-----------+\n");
+  }
+  return ;
+}
+int main(){
+  Medicament m1,m2,m3,m4;
+  double dos;
+  string s;
+  std::cin >> m1>>m2>>m3;
+  m4=m1+m3;
+  Pharmacy med1(&m1,&m2);
+  med1.add_medicament(&m3);
+  med1.add_medicament(&m4);
+  med1.Information();
+  cout<<"Enter the dose for which you want to find the medicine"<<endl;
+  cin>>dos;
+  med1.poiskdosa(dos);
+  cout<<"Enter the substance for which you want to find the medicine"<<endl;
+  cin>>s;
+  med1.poiskactive_substance(s);
+  med1.del_medic_by_no(4);
+  med1.tablica();
+
+  return 0;
+}
